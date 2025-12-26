@@ -4,45 +4,45 @@
 
 @layer base {
   :root {
-    /* Soft, Calm, Wellness Light Mode */
-    --background: 260 20% 97%;
-    /* Soft lavender-tinted gray (almost white) */
-    --foreground: 260 5% 20%;
-    /* Soft charcoal, not pitch black */
+    /* Professional Light Mode (Clean, Minimal, High-End SaaS) */
+    --background: 0 0% 100%;
+    /* Pure White - No gray/lavender tint */
+    --foreground: 240 5% 10%;
+    /* Deep Charcoal - High contrast but softer than #000 */
 
     --card: 0 0% 100%;
-    /* Pure white cards */
-    --card-foreground: 260 5% 20%;
+    /* Pure White */
+    --card-foreground: 240 5% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 260 5% 20%;
+    --popover-foreground: 240 5% 10%;
 
     --primary: 266 52% 54%;
-    /* #814AC8 Amethyst (Brand Color) */
+    /* Amethyst (Brand) */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 260 10% 94%;
-    /* Very soft purple-gray */
-    --secondary-foreground: 260 5% 30%;
+    --secondary: 240 5% 96%;
+    /* Very subtle off-white for secondary backgrounds */
+    --secondary-foreground: 240 5% 10%;
 
-    --muted: 260 10% 94%;
-    --muted-foreground: 260 5% 50%;
-    /* Softer gray for secondary text */
+    --muted: 240 5% 96%;
+    /* Subtle mute */
+    --muted-foreground: 240 4% 46%;
 
-    --accent: 266 40% 96%;
-    /* Very subtle purple tint for hover states */
+    --accent: 266 50% 97%;
+    /* Very light brand tint for hover */
     --accent-foreground: 266 52% 54%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 260 10% 90%;
-    /* Soft border */
-    --input: 260 10% 90%;
+    --border: 240 5% 92%;
+    /* Very light, subtle borders */
+    --input: 240 5% 92%;
     --ring: 266 52% 54%;
 
-    --radius: 1rem;
-    /* Increase radius for friendlier, softer feel (16px) */
+    --radius: 0.75rem;
+    /* Professional, not too bubbly (12px) */
   }
 
   /* Defaulting to the "Dark" look as the primary aesthetic since the reference is dark mode */

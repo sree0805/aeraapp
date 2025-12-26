@@ -143,7 +143,7 @@ export default function Home() {
                   ))}
                 </ul>
               </div>
-              <div className="relative rounded-2xl border border-white/10 bg-white/5 p-4 aspect-square md:aspect-auto h-[400px] overflow-hidden group">
+              <div className="relative rounded-2xl border border-white/10 bg-white/5 p-4 aspect-video md:aspect-auto md:h-[400px] overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-50 z-10 pointer-events-none" />
                 <ParallaxImage src="/habits page.png" alt="Habits Tracking Interface" />
               </div>
@@ -177,7 +177,7 @@ export default function Home() {
                   View Analytics Demo
                 </Button>
               </div>
-              <div className="md:order-1 relative rounded-2xl border border-white/10 bg-white/5 p-4 aspect-square md:aspect-auto h-[400px] overflow-hidden group">
+              <div className="md:order-1 relative rounded-2xl border border-white/10 bg-white/5 p-4 aspect-video md:aspect-auto md:h-[400px] overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-bl from-blue-500/20 to-transparent opacity-50 z-10 pointer-events-none" />
                 <ParallaxImage src="/analytics page.png" alt="Analytics Dashboard" />
               </div>
