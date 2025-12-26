@@ -4,6 +4,9 @@
 
 @layer base {
   :root {
+    color-scheme: light;
+    /* Force browser UI (scrollbars etc) to light */
+
     /* Professional Light Mode (Clean, Minimal, High-End SaaS) */
     --background: 0 0% 100%;
     /* Pure White - No gray/lavender tint */
@@ -42,11 +45,13 @@
     --ring: 266 52% 54%;
 
     --radius: 0.75rem;
-    /* Professional, not too bubbly (12px) */
   }
 
-  /* Defaulting to the "Dark" look as the primary aesthetic since the reference is dark mode */
+  /* Dark Mode Overrides */
   .dark {
+    color-scheme: dark;
+    /* Force browser UI to dark */
+
     --background: 0 0% 0%;
     /* Pure Black */
     --foreground: 0 0% 100%;

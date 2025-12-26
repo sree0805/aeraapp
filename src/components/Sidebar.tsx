@@ -22,7 +22,7 @@ export function Sidebar({ className }: SidebarProps) {
     ]
 
     return (
-        <div className={cn("pb-12 h-screen border-r bg-card/30 backdrop-blur-xl border-white/5", className)}>
+        <div className={cn("pb-12 h-screen border-r bg-card/30 backdrop-blur-xl border-border/40", className)}>
             <div className="space-y-4 py-6">
                 <div className="px-4 mb-6">
                     <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent px-2 flex items-center gap-2">
