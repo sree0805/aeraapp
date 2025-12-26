@@ -45,11 +45,12 @@ function ParallaxImage({ src, alt, className }: { src: string; alt: string; clas
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans relative overflow-x-hidden">
       {/* Global Background: Grid & Gradient */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {/* Subtle Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        {/* Subtle Grid Pattern - Adjusted for Light/Dark */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(128,128,128,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(128,128,128,0.1)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
         {/* Purple/Pink Colorgrade Gradients */}
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-500/10 rounded-full blur-[120px]" />
@@ -202,14 +203,14 @@ export default function Home() {
                 { q: "The mood and sleep correlations gave me insights I never knew I needed.", n: "Sarah J.", t: "Product Manager" },
                 { q: "Simple, effective, and beautiful. I use it every single day.", n: "Mike T.", t: "Developer" }
               ].map((item, i) => (
-                <Card key={i} className="bg-black border-white/10 hover:border-primary/50 transition-colors duration-300">
+                <Card key={i} className="bg-card border-border hover:border-primary/50 transition-colors duration-300 shadow-sm">
                   <CardHeader>
                     <div className="flex gap-1 mb-4">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star key={s} size={16} className="fill-primary text-primary" />
                       ))}
                     </div>
-                    <CardDescription className="text-base text-white/90 italic">
+                    <CardDescription className="text-base text-card-foreground/90 italic">
                       &quot;{item.q}&quot;
                     </CardDescription>
                   </CardHeader>
@@ -247,7 +248,7 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="py-12 border-t border-white/10 bg-black">
+        <footer className="py-12 border-t border-border bg-background">
           <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-xl font-bold tracking-tight flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 w-5 h-5">
