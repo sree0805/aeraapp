@@ -38,32 +38,34 @@ export function OverviewCharts({ dailyData, weeklyData, hideDaily, hideWeekly }:
                         <CardTitle className="text-lg font-medium tracking-tight">Daily Progress</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-[200px] w-full min-w-[350px] flex items-center justify-between gap-8">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={dailyChart}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={75}
-                                        startAngle={90}
-                                        endAngle={-270}
-                                        paddingAngle={5}
-                                        cornerRadius={10}
-                                        dataKey="value"
-                                        stroke="none"
-                                    >
-                                        {dailyChart.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                    />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div className="flex-1 flex flex-col justify-center space-y-1 pr-4">
+                        <div className="h-auto md:h-[200px] w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
+                            <div className="h-[200px] w-full md:w-1/2">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={dailyChart}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={75}
+                                            startAngle={90}
+                                            endAngle={-270}
+                                            paddingAngle={5}
+                                            cornerRadius={10}
+                                            dataKey="value"
+                                            stroke="none"
+                                        >
+                                            {dailyChart.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.fill} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <div className="flex-1 flex flex-col items-center md:items-start justify-center space-y-1 md:pr-4 text-center md:text-left">
                                 <span className="text-4xl font-bold tracking-tighter text-foreground">
                                     {dailyData.completed} <span className="text-xl text-muted-foreground font-medium">/ {dailyData.total}</span>
                                 </span>
@@ -81,32 +83,34 @@ export function OverviewCharts({ dailyData, weeklyData, hideDaily, hideWeekly }:
                         <CardTitle className="text-lg font-medium tracking-tight">Weekly Consistency</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-[200px] w-full min-w-[350px] flex items-center justify-between gap-8">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={weeklyChart}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={75}
-                                        startAngle={90}
-                                        endAngle={-270}
-                                        paddingAngle={5}
-                                        cornerRadius={10}
-                                        dataKey="value"
-                                        stroke="none"
-                                    >
-                                        {weeklyChart.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                    />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div className="flex-1 flex flex-col justify-center space-y-1 pr-4">
+                        <div className="h-auto md:h-[200px] w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
+                            <div className="h-[200px] w-full md:w-1/2">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={weeklyChart}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={75}
+                                            startAngle={90}
+                                            endAngle={-270}
+                                            paddingAngle={5}
+                                            cornerRadius={10}
+                                            dataKey="value"
+                                            stroke="none"
+                                        >
+                                            {weeklyChart.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.fill} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <div className="flex-1 flex flex-col items-center md:items-start justify-center space-y-1 md:pr-4 text-center md:text-left">
                                 <span className="text-4xl font-bold tracking-tighter text-foreground">
                                     {weeklyData.completedDays} <span className="text-xl text-muted-foreground font-medium">/ 7</span>
                                 </span>

@@ -4,28 +4,45 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* Soft, Calm, Wellness Light Mode */
+    --background: 260 20% 97%;
+    /* Soft lavender-tinted gray (almost white) */
+    --foreground: 260 5% 20%;
+    /* Soft charcoal, not pitch black */
+
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    /* Pure white cards */
+    --card-foreground: 260 5% 20%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 260 5% 20%;
+
     --primary: 266 52% 54%;
-    /* #814AC8 Amethyst */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    /* #814AC8 Amethyst (Brand Color) */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 260 10% 94%;
+    /* Very soft purple-gray */
+    --secondary-foreground: 260 5% 30%;
+
+    --muted: 260 10% 94%;
+    --muted-foreground: 260 5% 50%;
+    /* Softer gray for secondary text */
+
+    --accent: 266 40% 96%;
+    /* Very subtle purple tint for hover states */
+    --accent-foreground: 266 52% 54%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+
+    --border: 260 10% 90%;
+    /* Soft border */
+    --input: 260 10% 90%;
     --ring: 266 52% 54%;
-    --radius: 0.75rem;
-    /* 12px */
+
+    --radius: 1rem;
+    /* Increase radius for friendlier, softer feel (16px) */
   }
 
   /* Defaulting to the "Dark" look as the primary aesthetic since the reference is dark mode */

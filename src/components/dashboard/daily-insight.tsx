@@ -56,37 +56,37 @@ export function DailyInsight() {
     return (
         // Ambient Overlay - Light dim (5% opacity), dismiss on click anywhere
         <div
-            className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] bg-black/5 transition-opacity duration-1000 ease-in-out cursor-default"
+            className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] bg-background/20 transition-opacity duration-1000 ease-in-out cursor-default backdrop-blur-[1px]"
             onClick={handleClose}
         >
             {/* Soft Insight Card */}
             <div
-                className="relative max-w-md w-[90%] bg-indigo-50/95 backdrop-blur-md rounded-2xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 animate-in fade-in slide-in-from-bottom-4 duration-700"
+                className="relative max-w-md w-[90%] bg-card/95 backdrop-blur-xl rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-border/50 animate-in fade-in slide-in-from-bottom-4 duration-700 ring-1 ring-black/5"
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking card itself
             >
                 <div className="flex flex-col items-center text-center space-y-4">
-                    <div className="bg-white/80 p-2 rounded-full shadow-sm">
-                        <Sparkles className="h-5 w-5 text-indigo-400" />
+                    <div className="bg-primary/10 p-2 rounded-full shadow-sm ring-1 ring-primary/20">
+                        <Sparkles className="h-5 w-5 text-primary" />
                     </div>
 
-                    <h3 className="text-sm font-medium uppercase tracking-wider text-indigo-400/80">
+                    <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
                         Daily Insight
                     </h3>
 
-                    <p className="text-lg font-medium text-slate-700 leading-relaxed font-sans">
+                    <p className="text-lg font-medium text-foreground leading-relaxed font-sans">
                         {insight}
                     </p>
 
                     <button
                         onClick={handleClose}
-                        className="text-xs text-indigo-400 hover:text-indigo-600 transition-colors mt-2 font-medium"
+                        className="text-xs text-primary hover:text-primary/80 transition-colors mt-2 font-medium"
                     >
                         Got it
                     </button>
 
                     <button
                         onClick={handleClose}
-                        className="absolute top-2 right-4 text-slate-300 hover:text-slate-500 text-xl leading-none"
+                        className="absolute top-3 right-4 text-muted-foreground hover:text-foreground text-xl leading-none"
                     >
                         &times;
                     </button>

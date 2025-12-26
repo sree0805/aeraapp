@@ -60,9 +60,9 @@ export function QuickAdd() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="sm" className="mr-2 gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0">
+                <Button size="sm" className="mr-0 md:mr-2 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground border-0 shadow-sm transition-all hover:scale-105">
                     <Plus className="h-4 w-4" />
-                    Quick Add
+                    <span className="hidden md:inline">Quick Add</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
