@@ -77,9 +77,9 @@ export default function Home() {
               <span className="text-sm font-medium text-white/80">Productivity Redefined</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 max-w-5xl mx-auto">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60 max-w-5xl mx-auto">
               Master Your Habits <br className="hidden md:block" />
-              <span className="text-white">Master Your Life</span>
+              <span className="text-foreground">Master Your Life</span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -139,7 +139,7 @@ export default function Home() {
                   {['Daily Streak Engine', 'Visual Progress Bars', 'Category Filtering'].map((item) => (
                     <li key={item} className="flex items-center gap-3">
                       <CheckCircle2 className="text-primary h-5 w-5" />
-                      <span className="text-white/90">{item}</span>
+                      <span className="text-foreground/90">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -219,7 +219,7 @@ export default function Home() {
                       {item.n[0]}
                     </div>
                     <div>
-                      <p className="font-semibold text-white">{item.n}</p>
+                      <p className="font-semibold text-foreground">{item.n}</p>
                       <p className="text-xs text-muted-foreground">{item.t}</p>
                     </div>
                   </CardFooter>
@@ -258,9 +258,9 @@ export default function Home() {
             </p>
 
             <div className="flex gap-8 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-              <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-              <Link href="#" className="hover:text-white transition-colors">Twitter</Link>
+              <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+              <Link href="#" className="hover:text-foreground transition-colors">Twitter</Link>
             </div>
 
             <p className="text-sm text-zinc-600">
