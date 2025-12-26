@@ -210,7 +210,7 @@ export default function Home() {
                       ))}
                     </div>
                     <CardDescription className="text-base text-white/90 italic">
-                      "{item.q}"
+                      &quot;{item.q}&quot;
                     </CardDescription>
                   </CardHeader>
                   <CardFooter className="flex items-center gap-4">

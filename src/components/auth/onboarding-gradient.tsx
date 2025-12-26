@@ -38,7 +38,7 @@ export function OnboardingGradient() {
           className="max-w-xl"
         >
           <h2 className="text-3xl md:text-4xl font-serif text-white leading-snug tracking-tight drop-shadow-2xl">
-            “Change doesn't start with action, <br />
+            “Change doesn&apos;t start with action, <br />
             It starts with a decision to see differently.”
           </h2>
           <div className="text-right mt-6 mr-4">

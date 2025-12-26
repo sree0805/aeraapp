@@ -85,7 +85,7 @@ export function ShareStreak({ streak, variant = "outline" }: ShareStreakProps) {
 
                     <div className="text-center space-y-2 relative z-10">
                         <p className="text-xl font-medium tracking-tight">
-                            "Consistency builds momentum."
+                            &quot;Consistency builds momentum.&quot;
                         </p>
                         <p className="text-sm text-muted-foreground">
                             Keep going. Every day is a win.

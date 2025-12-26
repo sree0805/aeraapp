@@ -7,8 +7,7 @@ import { Sparkles, Lightbulb } from "lucide-react";
 export function DailyInsight() {
     const [open, setOpen] = useState(false);
     const [insight, setInsight] = useState("");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isLoading, setIsLoading] = useState(false);
+    const [_isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const checkAndFetchInsight = async () => {

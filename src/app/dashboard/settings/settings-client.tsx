@@ -431,7 +431,7 @@ export function SettingsClient({ user, stats, memberSince }: SettingsClientProps
                                 <CardContent className="p-6 flex items-center justify-between">
                                     <div className="space-y-1">
                                         <Label>Habit Streak Alerts</Label>
-                                        <p className="text-sm text-muted-foreground">Get notified if you're about to break a streak.</p>
+                                        <p className="text-sm text-muted-foreground">Get notified if you&apos;re about to break a streak.</p>
                                     </div>
                                     <Switch defaultChecked />
                                 </CardContent>
