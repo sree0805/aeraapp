@@ -10,7 +10,7 @@ export default function TherapistPage() {
                 </p>
             </div>
 
-            <div className="max-w-4xl mx-auto w-full">
+            <div className="max-w-4xl mx-auto w-full h-[calc(100vh-12rem)] min-h-[500px]">
                 <ChatInterface />
             </div>
         </div>

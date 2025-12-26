@@ -90,26 +90,26 @@ export function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-black/95 backdrop-blur-xl border-b border-white/10 overflow-hidden"
+                        className="md:hidden bg-background/95 backdrop-blur-xl border-b border-border overflow-hidden"
                     >
                         <div className="container mx-auto px-4 py-8 flex flex-col gap-6">
                             <Link
                                 href="#features"
-                                className="text-lg font-medium text-white/80 hover:text-white"
+                                className="text-lg font-medium text-muted-foreground hover:text-foreground"
                                 onClick={() => setIsOpen(false)}
                             >
                                 Features
                             </Link>
                             <Link
                                 href="/dashboard"
-                                className="text-lg font-medium text-white/80 hover:text-white"
+                                className="text-lg font-medium text-muted-foreground hover:text-foreground"
                                 onClick={() => setIsOpen(false)}
                             >
                                 Dashboard
                             </Link>
                             <div className="flex flex-col gap-4 mt-4">
                                 <Link href="/login" onClick={() => setIsOpen(false)}>
-                                    <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5">
+                                    <Button variant="outline" className="w-full border-border text-muted-foreground hover:bg-secondary/50 hover:text-foreground">
                                         Log in
                                     </Button>
                                 </Link>

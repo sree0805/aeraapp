@@ -103,31 +103,33 @@ export function HabitCard({ habit, completedDates, weekStart }: HabitCardProps) 
                     <CardDescription className="mb-4">{habit.description || "No description"}</CardDescription>
 
                     {/* Weekly Checkboxes */}
-                    <div className="flex justify-between items-center bg-secondary/30 p-2 rounded-lg">
-                        {weekDays.map((day) => {
-                            const dateStr = format(day, 'yyyy-MM-dd')
-                            const isCompleted = optimisticCompletedDates.includes(dateStr)
-                            const isToday = isSameDay(day, new Date())
-                            const isFuture = day > new Date() && !isToday // Simple check
+                    <div className="flex overflow-x-auto gap-2 bg-secondary/30 p-2 rounded-lg scrollbar-none">
+                        <div className="flex w-full justify-between items-center min-w-[280px]">
+                            {weekDays.map((day) => {
+                                const dateStr = format(day, 'yyyy-MM-dd')
+                                const isCompleted = optimisticCompletedDates.includes(dateStr)
+                                const isToday = isSameDay(day, new Date())
+                                const isFuture = day > new Date() && !isToday // Simple check
 
-                            return (
-                                <div key={dateStr} className="flex flex-col items-center gap-2">
-                                    <span className={cn("text-xs font-medium", isToday ? "text-primary" : "text-muted-foreground")}>
-                                        {format(day, 'EEE')}
-                                    </span>
-                                    <Checkbox
-                                        checked={isCompleted}
-                                        disabled={isFuture}
-                                        onCheckedChange={() => !isFuture && handleToggle(dateStr, isCompleted)}
-                                        className={cn(
-                                            "h-6 w-6 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
-                                            isToday && !isCompleted && "border-primary",
-                                            isFuture && "opacity-50 cursor-not-allowed bg-muted"
-                                        )}
-                                    />
-                                </div>
-                            )
-                        })}
+                                return (
+                                    <div key={dateStr} className="flex flex-col items-center gap-2">
+                                        <span className={cn("text-xs font-medium", isToday ? "text-primary" : "text-muted-foreground")}>
+                                            {format(day, 'EEE')}
+                                        </span>
+                                        <Checkbox
+                                            checked={isCompleted}
+                                            disabled={isFuture}
+                                            onCheckedChange={() => !isFuture && handleToggle(dateStr, isCompleted)}
+                                            className={cn(
+                                                "h-6 w-6 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+                                                isToday && !isCompleted && "border-primary",
+                                                isFuture && "opacity-50 cursor-not-allowed bg-muted"
+                                            )}
+                                        />
+                                    </div>
+                                )
+                            })}
+                        </div>
                     </div>
 
                     <div className="mt-4 flex items-center justify-between text-sm">
