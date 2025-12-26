@@ -126,7 +126,7 @@ export function EmotionsCalendar({ currentMonthStart, currentMonthEnd, dayLogs }
                             {selectedLog.note && (
                                 <div className="space-y-2">
                                     <h4 className="text-sm font-medium text-muted-foreground">Journal Note</h4>
-                                    <p className="text-sm italic border-l-2 pl-4 py-1">"{selectedLog.note}"</p>
+                                    <p className="text-sm italic border-l-2 pl-4 py-1">&quot;{selectedLog.note}&quot;</p>
                                 </div>
                             )}
                         </div>

@@ -108,7 +108,7 @@ export default async function DashboardPage() {
                                     Welcome!
                                 </h2>
                                 <p className="text-muted-foreground text-xl">
-                                    You've completed <span className="font-bold text-foreground">{uniqueHabitsCompletedToday}</span> of <span className="font-bold text-foreground">{totalHabits}</span> habits today.
+                                    You&apos;ve completed <span className="font-bold text-foreground">{uniqueHabitsCompletedToday}</span> of <span className="font-bold text-foreground">{totalHabits}</span> habits today.
                                 </p>
                                 <div className="pt-4 flex justify-center md:justify-start gap-3">
                                     <SleepLogger />
@@ -197,7 +197,7 @@ export default async function DashboardPage() {
                         </CardContent>
                         <div className="p-6 bg-secondary/50 mt-auto">
                             <p className="text-sm text-muted-foreground text-center italic">
-                                "Success is the sum of small efforts, repeated day in and day out."
+                                &quot;Success is the sum of small efforts, repeated day in and day out.&quot;
                             </p>
                         </div>
                     </Card>

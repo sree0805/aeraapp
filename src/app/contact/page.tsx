@@ -9,7 +9,7 @@ export default function ContactPage() {
 
                 <div className="space-y-6 text-white/90 leading-relaxed">
                     <p className="text-lg text-muted-foreground">
-                        We'd love to hear from you. Whether you have a question about features, pricing, or need support, our team is ready to answer all your questions.
+                        We&apos;d love to hear from you. Whether you have a question about features, pricing, or need support, our team is ready to answer all your questions.
                     </p>
 
                     <div className="grid gap-6 mt-8">
