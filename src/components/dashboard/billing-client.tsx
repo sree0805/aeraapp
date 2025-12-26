@@ -16,8 +16,13 @@ interface BillingClientProps {
     } | null; // null if no record yet (effectively free)
 }
 
+import { useToast } from "@/hooks/use-toast";
+
+// ... existing imports
+
 export function BillingClient({ usage }: BillingClientProps) {
     const router = useRouter();
+    const { toast } = useToast();
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
     const currentPlan = usage?.plan || 'free';
@@ -25,25 +30,11 @@ export function BillingClient({ usage }: BillingClientProps) {
     const purchasedCredits = usage?.purchased_credits ?? 0;
 
     const handleUpgrade = async (plan: string) => {
-        setLoadingPlan(plan);
-        try {
-            const res = await fetch('/api/stripe/checkout', {
-                method: 'POST',
-                body: JSON.stringify({ plan }),
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            const data = await res.json();
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                console.error("No checkout URL returned");
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoadingPlan(null);
-        }
+        // Temporary placeholder for deployment
+        toast({
+            title: "Coming Soon",
+            description: "Payments are currently disabled for this deployment.",
+        })
     };
 
     return (
