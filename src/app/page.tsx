@@ -77,24 +77,24 @@ export default function Home() {
               <span className="text-sm font-medium text-white/80">Productivity Redefined</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60 max-w-5xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60 max-w-5xl mx-auto">
               Master Your Habits <br className="hidden md:block" />
               <span className="text-foreground">Master Your Life</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4">
               The all-in-one productivity suite for high achievers. Track habits, monitor mood,
               and gain AI-driven insights to reach your peak potential.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href="/dashboard">
-                <Button size="lg" className="h-12 px-8 rounded-full text-base bg-primary hover:bg-primary/90 shadow-[0_0_40px_-10px_rgba(129,74,200,0.5)] transition-all hover:scale-105">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full px-4">
+              <Link href="/dashboard" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto h-12 px-8 rounded-full text-base bg-primary hover:bg-primary/90 shadow-[0_0_40px_-10px_rgba(129,74,200,0.5)] transition-all hover:scale-105">
                   Go to Dashboard
                 </Button>
               </Link>
-              <Link href="#features">
-                <Button size="lg" variant="outline" className="h-12 px-8 rounded-full text-base border-white/10 hover:bg-white/5 hover:text-white">
+              <Link href="#features" className="w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto h-12 px-8 rounded-full text-base border-white/10 hover:bg-white/5 hover:text-foreground">
                   Explore Features
                 </Button>
               </Link>
@@ -105,7 +105,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="mt-16 relative mx-auto max-w-5xl rounded-xl border border-white/10 bg-white/5 p-2 backdrop-blur-sm"
+              className="mt-12 md:mt-16 relative mx-auto max-w-5xl rounded-xl border border-white/10 bg-white/5 p-2 backdrop-blur-sm"
             >
               <div className="rounded-lg bg-black/80 aspect-[16/9] w-full overflow-hidden border border-white/5 relative group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
@@ -116,7 +116,7 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-24 md:py-32 relative">
+        <section id="features" className="py-12 md:py-32 relative">
           <div className="container mx-auto px-4 space-y-32">
 
             {/* Feature 1: Habit Tracking */}
@@ -130,7 +130,7 @@ export default function Home() {
                 <div className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-lg text-primary">
                   <CheckCircle2 size={24} />
                 </div>
-                <h2 className="text-3xl md:text-5xl font-bold">Scientific Habit Tracking</h2>
+                <h2 className="text-2xl md:text-5xl font-bold">Scientific Habit Tracking</h2>
                 <p className="text-muted-foreground text-lg leading-relaxed">
                   Build streaks that last. Our streak engine helps you stay consistent every single day
                   to help you balance work, rest, and play. Visual progress bars keep you motivated.
@@ -161,7 +161,7 @@ export default function Home() {
                 <div className="inline-flex items-center justify-center p-2 bg-blue-500/10 rounded-lg text-blue-500">
                   <BarChart size={24} />
                 </div>
-                <h2 className="text-3xl md:text-5xl font-bold">Total Aera Analytics</h2>
+                <h2 className="text-2xl md:text-5xl font-bold">Total Aera Analytics</h2>
                 <p className="text-muted-foreground text-lg leading-relaxed">
                   Connect the dots between your sleep, mood, and productivity.
                   Our dashboard visualizes how your rest affects your output.
@@ -188,10 +188,10 @@ export default function Home() {
         </section>
 
         {/* Testimonials */}
-        <section id="testimonials" className="py-24 bg-zinc-950/50">
+        <section id="testimonials" className="py-12 md:py-24 bg-zinc-950/50">
           <div className="container mx-auto px-4">
-            <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-              <h2 className="text-3xl md:text-5xl font-bold">Community Loved</h2>
+            <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16 space-y-4">
+              <h2 className="text-2xl md:text-5xl font-bold">Community Loved</h2>
               <p className="text-muted-foreground text-lg">
                 Helping thousands of users regain control of their time.
               </p>

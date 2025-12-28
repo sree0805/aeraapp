@@ -102,22 +102,22 @@ export default async function DashboardPage() {
                         <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[80px] pointer-events-none opacity-50" />
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px] pointer-events-none" />
 
-                        <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
-                            <div className="space-y-2 text-center md:text-left">
-                                <h2 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+                        <CardContent className="p-4 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                            <div className="space-y-4 md:space-y-2 text-center md:text-left w-full md:w-auto">
+                                <h2 className="text-3xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
                                     Welcome!
                                 </h2>
-                                <p className="text-muted-foreground text-xl">
+                                <p className="text-muted-foreground text-lg md:text-xl">
                                     You&apos;ve completed <span className="font-bold text-foreground">{uniqueHabitsCompletedToday}</span> of <span className="font-bold text-foreground">{totalHabits}</span> habits today.
                                 </p>
-                                <div className="pt-4 flex justify-center md:justify-start gap-3">
+                                <div className="pt-4 flex flex-wrap justify-center md:justify-start gap-3">
                                     <SleepLogger />
                                     <MoodLogger />
                                 </div>
                             </div>
 
                             {/* Daily Progress Ring (integrated into Hero) */}
-                            <div className="shrink-0 scale-110">
+                            <div className="shrink-0 scale-100 md:scale-110">
                                 <OverviewCharts
                                     dailyData={{ completed: uniqueHabitsCompletedToday, total: totalHabits || 0 }}
                                     weeklyData={{ completedDays: 0 }} // Weekly hidden here, shown in side col
@@ -128,7 +128,7 @@ export default async function DashboardPage() {
                     </Card>
 
                     {/* Stats Grid (Below Hero) */}
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                         <Card className="bg-card/50 backdrop-blur-sm border-none shadow-sm ring-1 ring-white/10 hover:bg-card hover:translate-y-[-2px] transition-all">
                             <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-2">
                                 <div className="p-3 bg-blue-500/10 rounded-full">
