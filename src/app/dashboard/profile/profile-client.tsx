@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -22,11 +23,13 @@ import {
     Loader2,
     Check,
     X,
-    User
+    Camera,
+    Mail,
+    CreditCard
 } from "lucide-react"
 import { logout } from "@/app/(auth)/logout-action"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { updateProfile } from "./actions"
+import Link from "next/link"
 
 interface ProfileClientProps {
     user: {
@@ -40,15 +43,20 @@ interface ProfileClientProps {
 export function ProfileClient({ user, memberSince }: ProfileClientProps) {
     const [isEditing, setIsEditing] = useState(false)
     const [name, setName] = useState(user.user_metadata?.full_name || user.email?.split('@')[0] || 'User')
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(user.user_metadata?.avatar_url || null)
     const [isSaving, setIsSaving] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const supabase = createClient()
 
     // Keep name in sync with server data when not editing
     useEffect(() => {
         if (!isEditing) {
             setName(user.user_metadata?.full_name || user.email?.split('@')[0] || 'User')
+            setAvatarUrl(user.user_metadata?.avatar_url || null)
         }
-    }, [user.user_metadata?.full_name, user.email, isEditing])
+    }, [user.user_metadata, user.email, isEditing])
 
     const handleSave = async () => {
         if (!name.trim()) {
@@ -59,17 +67,19 @@ export function ProfileClient({ user, memberSince }: ProfileClientProps) {
         setIsSaving(true)
         setError(null)
 
-        const formData = new FormData()
-        formData.append('name', name)
+        try {
+            const { error } = await supabase.auth.updateUser({
+                data: { full_name: name }
+            })
 
-        const res = await updateProfile(formData)
+            if (error) throw error
 
-        if (res?.error) {
-            setError(res.error)
-        } else {
             setIsEditing(false)
+        } catch (err: any) {
+            setError(err.message)
+        } finally {
+            setIsSaving(false)
         }
-        setIsSaving(false)
     }
 
     const handleCancel = () => {
@@ -78,188 +88,211 @@ export function ProfileClient({ user, memberSince }: ProfileClientProps) {
         setError(null)
     }
 
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file) return
+
+        setIsUploading(true)
+        setError(null)
+
+        try {
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${user.id}-${Date.now()}.${fileExt}`
+            const filePath = `${fileName}`
+
+            // 1. Upload to Supabase Storage
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file)
+
+            if (uploadError) throw uploadError
+
+            // 2. Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath)
+
+            // 3. Update User Metadata
+            const { error: updateError } = await supabase.auth.updateUser({
+                data: { avatar_url: publicUrl }
+            })
+
+            if (updateError) throw updateError
+
+            // 4. Update Local State
+            setAvatarUrl(publicUrl)
+
+            // Optional: Reload page to sync server comp if needed, but client state is enough for now
+        } catch (err: any) {
+            console.error(err)
+            setError(err.message || "Failed to upload image")
+        } finally {
+            setIsUploading(false)
+        }
+    }
+
+    const initials = name.substring(0, 2).toUpperCase()
+
     return (
-        <div className="grid gap-8 pb-10">
-            {/* Header Section */}
-            <header className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6 px-1">
-                <div className="flex flex-col sm:flex-row items-center sm:items-center gap-6">
-                    <Avatar className="h-28 w-28 ring-4 ring-background shadow-xl">
-                        <AvatarImage src="/avatars/01.png" alt={name} />
-                        <AvatarFallback className="text-3xl font-light bg-muted uppercase">
-                            {name.substring(0, 2)}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1.5 text-center sm:text-left">
-                        <div className="flex items-center justify-center sm:justify-start gap-2">
-                            {isEditing ? (
-                                <div className="space-y-1">
-                                    <Input
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        className="h-9 text-lg font-semibold w-[200px]"
-                                        placeholder="Full Name"
-                                        autoFocus
-                                    />
-                                    {error && <p className="text-[10px] text-destructive font-medium">{error}</p>}
+        <div className="flex flex-col gap-6 pb-10 max-w-sm mx-auto px-4 md:px-0">
+            {/* Header / Profile Card */}
+            {/* Header / Profile Card */}
+            <Card className="border-border shadow-sm bg-card">
+                <CardContent className="p-8">
+                    <div className="flex flex-col items-center text-center gap-6">
+
+                        {/* Avatar Section */}
+                        <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
+                            <Avatar className="h-32 w-32 ring-4 ring-background shadow-xl transition-transform group-hover:scale-105">
+                                <AvatarImage src={avatarUrl || ""} alt={name} className="object-cover" />
+                                <AvatarFallback className="text-4xl font-light bg-gradient-to-br from-indigo-500 to-purple-600 text-white uppercase">
+                                    {initials}
+                                </AvatarFallback>
+                            </Avatar>
+
+                            {/* Edit Overlay */}
+                            <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium backdrop-blur-[2px]">
+                                <Camera className="h-8 w-8" />
+                            </div>
+
+                            {/* Loading State */}
+                            {isUploading && (
+                                <div className="absolute inset-0 bg-background/80 rounded-full flex items-center justify-center z-10">
+                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                 </div>
-                            ) : (
-                                <>
-                                    <h1 className="text-3xl font-bold tracking-tight">{name}</h1>
-                                    <CheckCircle2 className="h-5 w-5 text-blue-500 fill-blue-500/10" />
-                                </>
                             )}
+
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                                accept="image/*"
+                            />
                         </div>
-                        <p className="text-muted-foreground font-medium">{user.email}</p>
-                        <p className="text-xs text-muted-foreground/80 flex items-center justify-center sm:justify-start gap-1">
-                            <Calendar className="h-3 w-3" />
-                            Member since {memberSince}
-                        </p>
+
+                        {/* Info Section - Vertically stacked and centered */}
+                        <div className="space-y-4 w-full max-w-sm">
+                            <div className="space-y-2 flex flex-col items-center">
+                                {isEditing ? (
+                                    <div className="space-y-2 w-full">
+                                        <Input
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            className="h-10 text-xl font-bold w-full text-center"
+                                            placeholder="Full Name"
+                                            autoFocus
+                                        />
+                                        {error && <p className="text-xs text-destructive font-medium">{error}</p>}
+                                    </div>
+                                ) : (
+                                    <h1 className="text-3xl font-bold tracking-tight">{name}</h1>
+                                )}
+
+                                <div className="flex flex-col items-center gap-1.5 text-muted-foreground text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <Mail className="h-3.5 w-3.5" />
+                                        <span>{user.email}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Calendar className="h-3.5 w-3.5" />
+                                        <span>Member since {memberSince}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons - Centered Row */}
+                            <div className="flex items-center justify-center gap-3 pt-2">
+                                {isEditing ? (
+                                    <>
+                                        <Button variant="outline" size="sm" onClick={handleCancel} disabled={isSaving}>
+                                            <X className="h-4 w-4 mr-2" /> Cancel
+                                        </Button>
+                                        <Button size="sm" onClick={handleSave} disabled={isSaving}>
+                                            {isSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />} Save
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                                        <Edit2 className="h-3.5 w-3.5 mr-2" /> Edit Profile
+                                    </Button>
+                                )}
+                                <Link href="/dashboard/billing">
+                                    <Button variant="ghost" size="sm">
+                                        <CreditCard className="h-3.5 w-3.5 mr-2" /> Billing
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </CardContent>
+            </Card>
 
-                <div className="flex gap-2">
-                    {isEditing ? (
-                        <>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-2 h-9 px-4 rounded-full"
-                                onClick={handleCancel}
-                                disabled={isSaving}
-                            >
-                                <X className="h-3.5 w-3.5" />
-                                Cancel
-                            </Button>
-                            <Button
-                                size="sm"
-                                className="gap-2 h-9 px-4 rounded-full"
-                                onClick={handleSave}
-                                disabled={isSaving}
-                            >
-                                {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
-                                Save Changes
-                            </Button>
-                        </>
-                    ) : (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2 shadow-sm h-9 px-4 rounded-full"
-                            onClick={() => setIsEditing(true)}
-                        >
-                            <Edit2 className="h-3.5 w-3.5" />
-                            Edit Profile
-                        </Button>
-                    )}
-                </div>
-            </header>
-
-            {/* Preferences Section */}
-            <section className="space-y-4">
-                <div className="flex items-center gap-2 px-1">
-                    <h2 className="text-xl font-semibold tracking-tight">Preferences</h2>
-                </div>
-                <Card className="border-none shadow-none bg-background/50 ring-1 ring-border">
-                    <CardContent className="p-0 divide-y divide-border">
-                        <div className="flex items-center justify-between p-6">
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium leading-none">Appearance</p>
-                                <p className="text-sm text-muted-foreground">Customize how the app looks.</p>
+            {/* Account Info Split */}
+            <div className="flex flex-col gap-6">
+                {/* Preferences Card */}
+                <Card className="border-none shadow-sm bg-card/50 ring-1 ring-border/50">
+                    <CardHeader className="text-center md:text-left">
+                        <CardTitle className="text-lg">Preferences</CardTitle>
+                        <CardDescription>Customize your app experience.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-0.5">
+                                <Label className="text-base">Appearance</Label>
+                                <p className="text-xs text-muted-foreground">Light or Dark mode</p>
                             </div>
                             <ThemeSelector />
                         </div>
-                        <div className="flex items-center justify-between p-6">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <Bell className="h-4 w-4 text-muted-foreground" />
-                                    <p className="text-sm font-medium leading-none">In-App Notifications</p>
-                                </div>
-                                <p className="text-sm text-muted-foreground">Receive daily updates and reminders.</p>
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-0.5">
+                                <Label className="text-base">Notifications</Label>
+                                <p className="text-xs text-muted-foreground">Push alerts</p>
                             </div>
                             <Switch defaultChecked />
                         </div>
-                        <div className="flex items-center justify-between p-6">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <Clock className="h-4 w-4 text-muted-foreground" />
-                                    <p className="text-sm font-medium leading-none">Daily Reminders</p>
-                                </div>
-                                <p className="text-sm text-muted-foreground">Get reminded to log your habits at 8:00 PM.</p>
-                            </div>
-                            <Switch defaultChecked />
-                        </div>
-                        <div className="flex items-center justify-between p-6">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <Globe className="h-4 w-4 text-muted-foreground" />
-                                    <p className="text-sm font-medium leading-none">Timezone</p>
-                                </div>
-                                <p className="text-sm text-muted-foreground">Automatic based on your location.</p>
-                            </div>
-                            <span className="text-sm font-medium text-muted-foreground">UTC {new Date().getTimezoneOffset() / -60 > 0 ? '+' : ''}{new Date().getTimezoneOffset() / -60}:00</span>
-                        </div>
                     </CardContent>
                 </Card>
-            </section>
 
-            {/* Account Section */}
-            <section className="space-y-4">
-                <div className="flex items-center gap-2 px-1">
-                    <h2 className="text-xl font-semibold tracking-tight">Account Settings</h2>
-                </div>
-                <Card className="border-none shadow-none bg-background/50 ring-1 ring-border">
-                    <CardContent className="p-6 space-y-6">
-                        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium">Security</p>
-                                <p className="text-sm text-muted-foreground">Update your password or enable MFA.</p>
-                            </div>
-                            <Button variant="outline" size="sm" className="gap-2">
-                                <Key className="h-4 w-4" />
-                                Change Password
-                            </Button>
-                        </div>
-                        <div className="w-full h-px bg-border" />
-                        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium">Data & Privacy</p>
-                                <p className="text-sm text-muted-foreground">Download a copy of your wellness data.</p>
-                            </div>
-                            <Button variant="outline" size="sm" className="gap-2">
-                                <Download className="h-4 w-4" />
-                                Export as JSON
-                            </Button>
-                        </div>
-                        <div className="w-full h-px bg-border" />
-                        <div className="flex justify-start pt-2">
-                            <Button variant="ghost" className="text-muted-foreground hover:text-foreground gap-2 p-0 h-auto" onClick={() => logout()}>
-                                <LogOut className="h-4 w-4" />
-                                Sign out of all devices
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            </section>
-
-            {/* Danger Zone */}
-            <section className="space-y-4">
-                <div className="flex items-center gap-2 px-1 text-destructive">
-                    <ShieldAlert className="h-5 w-5" />
-                    <h2 className="text-xl font-semibold tracking-tight">Danger Zone</h2>
-                </div>
-                <Card className="border-destructive/20 bg-destructive/5 dark:bg-destructive/10">
-                    <CardContent className="p-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                        <div className="space-y-1">
-                            <p className="text-sm font-medium text-destructive">Delete Account</p>
-                            <p className="text-sm text-muted-foreground">Permanently delete your account and all wellness data. This cannot be undone.</p>
-                        </div>
-                        <Button variant="destructive" size="sm" className="gap-2 shadow-sm">
-                            <Trash2 className="h-4 w-4" />
-                            Delete Account
+                {/* Security Card */}
+                <Card className="border-none shadow-sm bg-card/50 ring-1 ring-border/50">
+                    <CardHeader className="text-center md:text-left">
+                        <CardTitle className="text-lg">Security & Data</CardTitle>
+                        <CardDescription>Manage your account security.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <Button variant="outline" className="w-full justify-between h-auto py-3">
+                            <span className="flex items-center gap-2">
+                                <Key className="h-4 w-4" /> Change Password
+                            </span>
+                            <span className="text-xs text-muted-foreground">Last changed 30d ago</span>
+                        </Button>
+                        <Button variant="outline" className="w-full justify-between h-auto py-3">
+                            <span className="flex items-center gap-2">
+                                <Download className="h-4 w-4" /> Export Data
+                            </span>
+                            <span className="text-xs text-muted-foreground">JSON format</span>
                         </Button>
                     </CardContent>
                 </Card>
-            </section>
+            </div>
+
+            {/* Danger Zone */}
+            <Card className="border-destructive/20 bg-destructive/5">
+                <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+                    <div className="space-y-1">
+                        <h4 className="font-semibold text-destructive flex items-center justify-center md:justify-start gap-2">
+                            <ShieldAlert className="h-4 w-4" /> Danger Zone
+                        </h4>
+                        <p className="text-sm text-muted-foreground">Permanently delete your account and all data.</p>
+                    </div>
+                    <Button variant="destructive" size="sm">Delete Account</Button>
+                </CardContent>
+            </Card>
         </div>
     )
 }

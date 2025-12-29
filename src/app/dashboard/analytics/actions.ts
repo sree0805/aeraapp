@@ -95,6 +95,16 @@ export async function getAnalyticsData() {
     const daysCompleted = weeklyUniqueDays.size;
     const daysRemaining = Math.max(0, 7 - daysCompleted);
 
+    // 5. Fetch Plan Status
+    const { data: usage } = await supabase
+        .from('user_usage')
+        .select('plan')
+        .eq('user_id', user.id)
+        .single();
+
+    // Type assertion for plan
+    const userPlan = (usage?.plan === 'pro') ? 'pro' : 'free';
+
     return {
         sleepData: sleepData || [],
         moodData: moodData || [],
@@ -102,6 +112,7 @@ export async function getAnalyticsData() {
         weeklyChartData: [
             { name: "Completed", value: daysCompleted, fill: "#4f46e5" }, // Indigo-600
             { name: "Remaining", value: daysRemaining, fill: "#e2e8f0" }, // Slate-200
-        ]
+        ],
+        plan: userPlan
     };
 }

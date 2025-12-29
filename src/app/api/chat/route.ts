@@ -20,6 +20,12 @@ export async function POST(req: Request) {
             .eq('user_id', user.id)
             .single();
 
+        // Determine Plan Status
+        // In a real app, you'd check a 'subscriptions' table or Stripe status.
+        // For now, checks metadata or the 'plan' column in usage.
+        const isPro = usage?.plan === 'pro';
+        const DAILY_LIMIT = isPro ? 35 : 8;
+
         if (!usage) {
             // Create default record if missing
             const { data: newUsage, error } = await supabase
@@ -27,7 +33,7 @@ export async function POST(req: Request) {
                 .insert({
                     user_id: user.id,
                     plan: 'free',
-                    daily_credits: 5,
+                    daily_credits: 8,
                     purchased_credits: 0,
                     last_reset_date: new Date().toISOString()
                 })
@@ -36,8 +42,6 @@ export async function POST(req: Request) {
 
             if (error) {
                 console.error("Failed to create billing record:", error);
-                // Fail open or closed? Closed for safety, but open for UX? 
-                // Let's allow one free message if billing fails to init? No, strict.
                 return NextResponse.json({ reply: "Billing system error. Please contact support." }, { status: 500 });
             }
             usage = newUsage;
@@ -45,9 +49,6 @@ export async function POST(req: Request) {
 
         // Daily Reset Logic
         // We use an offset of -3.5 hours (3.5 hours before UTC midnight).
-        // This targets 9:00 AM IST. (IST = UTC+5.5).
-        // 9 AM IST = 3:30 AM UTC.
-        // 3:30 UTC - 3.5h = 00:00 (New Day Reset).
         const MILLIS_PER_HOUR = 60 * 60 * 1000;
         const OFFSET_HOURS = -3.5;
 
@@ -64,21 +65,21 @@ export async function POST(req: Request) {
             const { error: resetError } = await supabase
                 .from('user_usage')
                 .update({
-                    daily_credits: 5,
-                    // Store the ACTUAL (UTC) time of reset for record keeping, 
-                    // but the logic relies on the date string comparison.
+                    daily_credits: DAILY_LIMIT,
                     last_reset_date: new Date().toISOString()
                 })
                 .eq('user_id', user.id);
 
             if (resetError) console.error("Reset error", resetError);
-            usage.daily_credits = 5; // Optimistic update
+            usage.daily_credits = DAILY_LIMIT; // Optimistic update
         }
 
         // Check Availability
         if (usage.daily_credits <= 0 && usage.purchased_credits <= 0) {
             return NextResponse.json({
-                reply: "You have run out of AI credits for today. Upgrade to keep chatting!"
+                reply: isPro
+                    ? "You have used all your AI credits for today (35/35). They renew tomorrow!"
+                    : "You have run out of free AI credits (8/8). Upgrade to Pro for 35 credits daily!"
             }, { status: 402 });
         }
         // --- BILLING LOGIC END ---
@@ -135,7 +136,12 @@ GUIDELINES:
 ${contextString}`;
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+        // Model Selection Logic based on Plan
+        // 'gemini-flash-latest' is a stable alias for the fast model (Free)
+        // 'gemini-1.5-pro' provides deeper reasoning (Pro)
+        const modelName = isPro ? "gemini-1.5-pro" : "gemini-flash-latest";
+        const model = genAI.getGenerativeModel({ model: modelName });
 
         // History Construction
         const history = messages.slice(0, -1).map((m: any) => ({

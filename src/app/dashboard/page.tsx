@@ -87,117 +87,124 @@ export default async function DashboardPage() {
     const weekUniqueDays = uniqueDaysSet.size;
 
     return (
-        <div className="space-y-6 p-4 md:p-8 max-w-[1600px] mx-auto">
+        <div className="space-y-6 md:space-y-8 max-w-7xl mx-auto px-4 pt-4 md:px-0 md:pt-0">
             {/* Top Section: Hero & Weekly Pulse */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
                 {/* LEFT COL: Hero + Daily Focus (Span 8) */}
                 <div className="lg:col-span-8 flex flex-col gap-6">
-                    {/* Hero Card */}
-                    <Card className="border-none shadow-md bg-gradient-to-br from-primary/10 via-card to-card relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-8 opacity-10">
-                            <Sparkles className="w-64 h-64 text-primary" />
-                        </div>
-                        {/* Dreamy Background Blobs */}
-                        <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[80px] pointer-events-none opacity-50" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px] pointer-events-none" />
+                    {/* Hero Card - Native Mobile Feel */}
+                    <Card className="border-none shadow-sm md:shadow-md bg-gradient-to-br from-primary/10 via-card to-card relative overflow-hidden">
 
-                        <CardContent className="p-4 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
-                            <div className="space-y-4 md:space-y-2 text-center md:text-left w-full md:w-auto">
-                                <h2 className="text-3xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                                    Welcome!
-                                </h2>
-                                <p className="text-muted-foreground text-lg md:text-xl">
-                                    You&apos;ve completed <span className="font-bold text-foreground">{uniqueHabitsCompletedToday}</span> of <span className="font-bold text-foreground">{totalHabits}</span> habits today.
-                                </p>
-                                <div className="pt-4 flex flex-wrap justify-center md:justify-start gap-3">
-                                    <SleepLogger />
-                                    <MoodLogger />
+                        {/* Subtle Abstract Background Decoration */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[40px] pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/20 rounded-full blur-[30px] pointer-events-none" />
+
+                        <CardContent className="p-6 md:p-8">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-12">
+
+                                {/* Text Content */}
+                                <div className="space-y-4 md:space-y-3 text-center md:text-left w-full md:w-auto z-10">
+                                    <div className="space-y-1">
+                                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                                            Welcome!
+                                        </h2>
+                                        <p className="text-muted-foreground text-sm md:text-lg">
+                                            You&apos;ve completed <span className="font-semibold text-primary">{uniqueHabitsCompletedToday}</span> of <span className="font-semibold text-foreground">{totalHabits}</span> habits today.
+                                        </p>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="pt-2 flex flex-wrap justify-center md:justify-start gap-3">
+                                        <SleepLogger />
+                                        <MoodLogger />
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Daily Progress Ring (integrated into Hero) */}
-                            <div className="shrink-0 scale-100 md:scale-110">
-                                <OverviewCharts
-                                    dailyData={{ completed: uniqueHabitsCompletedToday, total: totalHabits || 0 }}
-                                    weeklyData={{ completedDays: 0 }} // Weekly hidden here, shown in side col
-                                    hideWeekly={true}
-                                />
+                                {/* Daily Progress Ring (integrated into Hero) */}
+                                <div className="shrink-0 scale-100 md:scale-110 w-full md:w-auto md:min-w-[400px]">
+                                    <OverviewCharts
+                                        dailyData={{ completed: uniqueHabitsCompletedToday, total: totalHabits || 0 }}
+                                        weeklyData={{ completedDays: 0 }} // Weekly hidden here, shown in side col
+                                        hideWeekly={true}
+                                    />
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    {/* Stats Grid (Below Hero) */}
-                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        <Card className="bg-card/50 backdrop-blur-sm border-none shadow-sm ring-1 ring-white/10 hover:bg-card hover:translate-y-[-2px] transition-all">
-                            <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-2">
-                                <div className="p-3 bg-blue-500/10 rounded-full">
-                                    <CheckSquare className="h-6 w-6 text-blue-500" />
+                    {/* Stats Grid - Mobile: Horizontal Scroll or Compact Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                        <Card className="bg-card border-border shadow-sm hover:border-primary/20 transition-colors">
+                            <CardContent className="p-4 flex flex-col items-center justify-center text-center space-y-2">
+                                <div className="p-2 bg-blue-50/50 dark:bg-blue-900/10 rounded-full">
+                                    <CheckSquare className="h-5 w-5 text-blue-500" />
                                 </div>
                                 <div>
-                                    <div className="text-2xl font-bold">{totalHabits || 0}</div>
-                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Active Habits</p>
+                                    <div className="text-xl font-bold tracking-tight">{totalHabits || 0}</div>
+                                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Habits</p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-card/50 backdrop-blur-sm border-none shadow-sm ring-1 ring-white/10 hover:bg-card hover:translate-y-[-2px] transition-all">
-                            <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-2">
-                                <div className="p-3 bg-orange-500/10 rounded-full">
-                                    <Flame className="h-6 w-6 text-orange-500" />
+                        <Card className="bg-card border-border shadow-sm hover:border-primary/20 transition-colors">
+                            <CardContent className="p-4 flex flex-col items-center justify-center text-center space-y-2">
+                                <div className="p-2 bg-orange-50/50 dark:bg-orange-900/10 rounded-full">
+                                    <Flame className="h-5 w-5 text-orange-500" />
                                 </div>
                                 <div>
-                                    <div className="flex items-center justify-center gap-2">
-                                        <div className="text-2xl font-bold">{highestStreak}</div>
-                                        <ShareStreak streak={highestStreak} variant="icon" />
+                                    <div className="flex items-center justify-center gap-1">
+                                        <div className="text-xl font-bold tracking-tight">{highestStreak}</div>
                                     </div>
-                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Best Streak</p>
+                                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Day Streak</p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-card/50 backdrop-blur-sm border-none shadow-sm ring-1 ring-white/10 hover:bg-card hover:translate-y-[-2px] transition-all">
-                            <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-2">
-                                <div className="p-3 bg-pink-500/10 rounded-full">
-                                    <ListTodo className="h-6 w-6 text-pink-500" />
+                        <Card className="bg-card border-border shadow-sm hover:border-primary/20 transition-colors">
+                            <CardContent className="p-4 flex flex-col items-center justify-center text-center space-y-2">
+                                <div className="p-2 bg-pink-50/50 dark:bg-pink-900/10 rounded-full">
+                                    <ListTodo className="h-5 w-5 text-pink-500" />
                                 </div>
                                 <div>
-                                    <div className="text-2xl font-bold">{pendingTasksCount || 0}</div>
-                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">To-Do</p>
+                                    <div className="text-xl font-bold tracking-tight">{pendingTasksCount || 0}</div>
+                                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">To-Do</p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-card/50 backdrop-blur-sm border-none shadow-sm ring-1 ring-white/10 hover:bg-card hover:translate-y-[-2px] transition-all">
-                            <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-2">
-                                <div className="p-3 bg-yellow-500/10 rounded-full">
-                                    <Trophy className="h-6 w-6 text-yellow-500" />
+                        <Card className="bg-card border-border shadow-sm hover:border-primary/20 transition-colors">
+                            <CardContent className="p-4 flex flex-col items-center justify-center text-center space-y-2">
+                                <div className="p-2 bg-yellow-50/50 dark:bg-yellow-900/10 rounded-full">
+                                    <Trophy className="h-5 w-5 text-yellow-500" />
                                 </div>
                                 <div>
-                                    <div className="text-2xl font-bold">{completedTasksCount || 0}</div>
-                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Wins</p>
+                                    <div className="text-xl font-bold tracking-tight">{completedTasksCount || 0}</div>
+                                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Wins</p>
                                 </div>
                             </CardContent>
                         </Card>
                     </div>
                 </div>
 
-                {/* RIGHT COL: Weekly Pulse & Tools (Span 4) */}
+                {/* RIGHT COL: Weekly Pulse (Desktop Only mainly, or stacked at bottom) */}
                 <div className="lg:col-span-4 flex flex-col gap-6">
-                    <Card className="h-full border-none shadow-md bg-card/80 backdrop-blur-md relative overflow-hidden flex flex-col">
-                        <CardHeader>
-                            <CardTitle>Weekly Consistency</CardTitle>
+                    <Card className="h-full border-none shadow-sm md:shadow-md bg-card relative overflow-hidden flex flex-col">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-lg">Weekly Pulse</CardTitle>
                         </CardHeader>
-                        <CardContent className="flex-1 flex items-center justify-center">
-                            <OverviewCharts
-                                dailyData={{ completed: 0, total: 0 }}
-                                weeklyData={{ completedDays: weekUniqueDays }}
-                                hideDaily={true}
-                            />
+                        <CardContent className="flex-1 flex items-center justify-center py-8">
+                            <div className="w-full md:min-w-[350px]">
+                                <OverviewCharts
+                                    dailyData={{ completed: 0, total: 0 }}
+                                    weeklyData={{ completedDays: weekUniqueDays }}
+                                    hideDaily={true}
+                                />
+                            </div>
                         </CardContent>
-                        <div className="p-6 bg-secondary/50 mt-auto">
-                            <p className="text-sm text-muted-foreground text-center italic">
-                                &quot;Success is the sum of small efforts, repeated day in and day out.&quot;
+                        <div className="p-4 bg-secondary/30 mt-auto border-t border-border/50">
+                            <p className="text-xs text-muted-foreground text-center italic">
+                                &quot;Consistency is the key to breakthrough.&quot;
                             </p>
                         </div>
                     </Card>

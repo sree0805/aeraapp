@@ -7,16 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
 import { ThemeSelector } from "@/components/dashboard/settings/theme-selector"
-import { updateProfile } from "@/app/dashboard/profile/actions"
 import { logout } from "@/app/(auth)/logout-action"
-import { ShareStreak } from "@/components/dashboard/share-streak"
 import { useNotifications } from "@/hooks/use-notifications"
+import { AnimatePresence, motion } from "framer-motion"
+import Link from "next/link"
 
 import {
-    User,
     Settings,
     Bell,
     Activity,
@@ -24,20 +21,11 @@ import {
     Shield,
     Key,
     AlertTriangle,
-    Check,
-    X,
-    Loader2,
-    Calendar,
-    Flame,
-    CheckSquare,
-    Trophy,
-    ExternalLink,
-    LogOut,
-    Download,
-    CheckCircle2,
-    Edit2,
-    Clock,
-    Globe
+    ChevronRight,
+    ArrowLeft,
+    CreditCard,
+    Globe,
+    User
 } from "lucide-react"
 
 interface SettingsClientProps {
@@ -46,243 +34,53 @@ interface SettingsClientProps {
         email: string | undefined
         user_metadata: any
     }
-    stats: {
-        habitsCount: number
-        maxStreak: number
-        totalCompletions: number
-        datesActive: number
-    }
+    stats: any
     memberSince: string
 }
 
-const sidebarItems = [
-    { id: "profile", label: "Profile", icon: User },
-    { id: "account", label: "Account", icon: Key },
-    { id: "preferences", label: "Preferences", icon: Settings },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "habits", label: "Habits & Tracking", icon: Activity },
-    { id: "resources", label: "Resources", icon: Video },
-    { id: "privacy", label: "Data & Privacy", icon: Shield },
-    { id: "danger", label: "Danger Zone", icon: AlertTriangle },
+type SectionId = "account" | "preferences" | "notifications" | "habits" | "resources" | "privacy" | "danger";
+
+const sections: { id: SectionId; label: string; icon: any; description: string }[] = [
+    { id: "account", label: "Security", icon: Key, description: "Password & Authentication" },
+    { id: "preferences", label: "Preferences", icon: Settings, description: "Theme & Timezone" },
+    { id: "notifications", label: "Notifications", icon: Bell, description: "Email & Push alerts" },
+    { id: "habits", label: "Habits & Tracking", icon: Activity, description: "Streak goals & confetti" },
+    { id: "resources", label: "Resources", icon: Video, description: "Helpful content" },
+    { id: "privacy", label: "Data & Privacy", icon: Shield, description: "Exports & Sessions" },
+    { id: "danger", label: "Danger Zone", icon: AlertTriangle, description: "Delete account" },
 ]
 
-export function SettingsClient({ user, stats, memberSince }: SettingsClientProps) {
+export function SettingsClient({ user, memberSince }: SettingsClientProps) {
     const { permission, requestPermission, sendNotification } = useNotifications()
-    const [activeSection, setActiveSection] = useState("profile")
-
-    // Settings State
-    const [dailyReminder, setDailyReminder] = useState(false)
+    const [activeSection, setActiveSection] = useState<SectionId>("account")
+    const [isMobile, setIsMobile] = useState(false)
+    const [mobileView, setMobileView] = useState<"menu" | "detail">("menu")
 
     useEffect(() => {
-        const stored = localStorage.getItem('daily_reminder')
-        if (stored) {
-            setDailyReminder(JSON.parse(stored))
+        const checkMobile = () => {
+            const mobile = window.innerWidth < 1024
+            setIsMobile(mobile)
+            if (!mobile) setMobileView("menu") // Reset on desktop
         }
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
     }, [])
 
-    const toggleDailyReminder = (checked: boolean) => {
-        setDailyReminder(checked)
-        localStorage.setItem('daily_reminder', JSON.stringify(checked))
-        if (checked && permission === 'default') {
-            requestPermission()
-        }
+    const handleSectionClick = (id: SectionId) => {
+        setActiveSection(id)
+        if (isMobile) setMobileView("detail")
     }
 
-    const scheduleTestReminder = () => {
-        if (permission !== 'granted') {
-            requestPermission();
-            return;
-        }
+    const goBack = () => setMobileView("menu")
 
-        const now = Date.now();
-        const scheduledTime = now + 60000; // 1 minute
-        const reminder = {
-            id: `test-${now}`,
-            title: "Test Reminder ⏰",
-            body: "This is a scheduled reminder (1 min delayed).",
-            timestamp: scheduledTime
-        };
-
-        const stored = localStorage.getItem('scheduled_reminders');
-        const queue = stored ? JSON.parse(stored) : [];
-        queue.push(reminder);
-        localStorage.setItem('scheduled_reminders', JSON.stringify(queue));
-
-        // Feedback
-        sendNotification("Timer Started", { body: "You will be notified in 1 minute." });
-    }
-
-    // Profile Edit State
-    const [isEditing, setIsEditing] = useState(false)
-    const [name, setName] = useState(user.user_metadata?.full_name || user.email?.split('@')[0] || 'User')
-    const [isSaving, setIsSaving] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-
-    // Sync name when not editing
-    useEffect(() => {
-        if (!isEditing) {
-            setName(user.user_metadata?.full_name || user.email?.split('@')[0] || 'User')
-        }
-    }, [user.user_metadata?.full_name, user.email, isEditing])
-
-    const handleSaveProfile = async () => {
-        if (!name.trim()) {
-            setError("Name cannot be empty")
-            return
-        }
-
-        setIsSaving(true)
-        setError(null)
-
-        const formData = new FormData()
-        formData.append('name', name)
-
-        const res = await updateProfile(formData)
-
-        if (res?.error) {
-            setError(res.error)
-        } else {
-            setIsEditing(false)
-        }
-        setIsSaving(false)
-    }
-
-    const handleCancelEdit = () => {
-        setName(user.user_metadata?.full_name || user.email?.split('@')[0] || 'User')
-        setIsEditing(false)
-        setError(null)
-    }
-
-    return (
-        <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto pb-10">
-            {/* Sidebar Navigation */}
-            <aside className="lg:w-64 shrink-0 space-y-1">
-                {sidebarItems.map((item) => (
-                    <button
-                        key={item.id}
-                        onClick={() => setActiveSection(item.id)}
-                        className={cn(
-                            "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                            activeSection === item.id
-                                ? "bg-primary/10 text-primary"
-                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        )}
-                    >
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                    </button>
-                ))}
-            </aside>
-
-            {/* Content Panel */}
-            <main className="flex-1 min-w-0 space-y-6">
-
-                {/* PROFILE SECTION */}
-                {activeSection === "profile" && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                        <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6 pb-6 border-b">
-                            <div className="flex flex-col sm:flex-row items-center sm:items-center gap-6">
-                                <Avatar className="h-28 w-28 ring-4 ring-background shadow-xl">
-                                    <AvatarImage src="/avatars/01.png" alt={name} />
-                                    <AvatarFallback className="text-3xl font-light bg-muted uppercase">
-                                        {name.substring(0, 2)}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="space-y-1.5 text-center sm:text-left">
-                                    <div className="flex items-center justify-center sm:justify-start gap-2">
-                                        {isEditing ? (
-                                            <div className="space-y-1">
-                                                <Input
-                                                    value={name}
-                                                    onChange={(e) => setName(e.target.value)}
-                                                    className="h-9 text-lg font-semibold w-[200px]"
-                                                    placeholder="Full Name"
-                                                    autoFocus
-                                                />
-                                                {error && <p className="text-[10px] text-destructive font-medium">{error}</p>}
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <h1 className="text-3xl font-bold tracking-tight">{name}</h1>
-                                                <CheckCircle2 className="h-5 w-5 text-blue-500 fill-blue-500/10" />
-                                            </>
-                                        )}
-                                    </div>
-                                    <p className="text-muted-foreground font-medium">{user.email}</p>
-                                    <p className="text-xs text-muted-foreground/80 flex items-center justify-center sm:justify-start gap-1">
-                                        <Calendar className="h-3 w-3" />
-                                        Member since {memberSince}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-2">
-                                {isEditing ? (
-                                    <>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="gap-2 h-9 px-4 rounded-full"
-                                            onClick={handleCancelEdit}
-                                            disabled={isSaving}
-                                        >
-                                            <X className="h-3.5 w-3.5" />
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            className="gap-2 h-9 px-4 rounded-full"
-                                            onClick={handleSaveProfile}
-                                            disabled={isSaving}
-                                        >
-                                            {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
-                                            Save Changes
-                                        </Button>
-                                    </>
-                                ) : (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="gap-2 shadow-sm h-9 px-4 rounded-full"
-                                        onClick={() => setIsEditing(true)}
-                                    >
-                                        <Edit2 className="h-3.5 w-3.5" />
-                                        Edit Profile
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            {[
-                                { label: "Active Habits", value: stats.habitsCount, icon: CheckSquare, color: "text-blue-500" },
-                                { label: "Best Streak", value: `${stats.maxStreak}d`, icon: Flame, color: "text-orange-500" },
-                                { label: "Total Wins", value: stats.totalCompletions, icon: Trophy, color: "text-yellow-600" },
-                                { label: "Days Active", value: stats.datesActive, icon: Activity, color: "text-green-600" }
-                            ].map((stat, i) => (
-                                <Card key={i} className="border-none shadow-none bg-muted/30 dark:bg-muted/10 ring-1 ring-border/50">
-                                    <CardHeader className="p-4 flex flex-row items-center justify-between space-y-0 text-left">
-                                        <CardTitle className="text-[13px] font-medium text-muted-foreground uppercase tracking-wider">{stat.label}</CardTitle>
-                                        <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                                    </CardHeader>
-                                    <CardContent className="p-4 pt-0 text-left">
-                                        <div className="flex items-center gap-2">
-                                            <div className="text-2xl font-bold tracking-tight">{stat.value}</div>
-                                            {stat.label === "Best Streak" && <ShareStreak streak={stats.maxStreak} variant="icon" />}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* ACCOUNT SECTION */}
-                {activeSection === "account" && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    const renderContent = (sectionId: SectionId) => {
+        switch (sectionId) {
+            case "account":
+                return (
+                    <div className="space-y-6">
                         <div>
-                            <h3 className="text-lg font-medium">Account Security</h3>
+                            <h3 className="text-lg font-medium">Security</h3>
                             <p className="text-sm text-muted-foreground">Manage your password and key account settings.</p>
                         </div>
                         <Separator />
@@ -306,47 +104,43 @@ export function SettingsClient({ user, stats, memberSince }: SettingsClientProps
                             </CardContent>
                         </Card>
                     </div>
-                )}
-
-                {/* PREFERENCES SECTION */}
-                {activeSection === "preferences" && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                )
+            case "preferences":
+                return (
+                    <div className="space-y-6">
                         <div>
                             <h3 className="text-lg font-medium">App Preferences</h3>
                             <p className="text-sm text-muted-foreground">Customize your experience.</p>
                         </div>
                         <Separator />
-                        <div className="space-y-4">
-                            <Card>
-                                <CardContent className="p-6 flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium">Appearance</p>
-                                        <p className="text-sm text-muted-foreground">Switch between light and dark mode.</p>
+                        <Card>
+                            <CardContent className="p-6 flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium">Appearance</p>
+                                    <p className="text-sm text-muted-foreground">Switch between light and dark mode.</p>
+                                </div>
+                                <ThemeSelector />
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-6 flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <Globe className="h-4 w-4 text-muted-foreground" />
+                                        <p className="text-sm font-medium">Timezone</p>
                                     </div>
-                                    <ThemeSelector />
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent className="p-6 flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <Globe className="h-4 w-4 text-muted-foreground" />
-                                            <p className="text-sm font-medium">Timezone</p>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">Automatic based on browser.</p>
-                                    </div>
-                                    <span className="text-sm font-medium text-muted-foreground">
-                                        UTC {new Date().getTimezoneOffset() / -60 > 0 ? '+' : ''}{new Date().getTimezoneOffset() / -60}:00
-                                    </span>
-                                </CardContent>
-                            </Card>
-                        </div>
+                                    <p className="text-sm text-muted-foreground">Automatic based on browser.</p>
+                                </div>
+                                <span className="text-sm font-medium text-muted-foreground">
+                                    UTC {new Date().getTimezoneOffset() / -60 > 0 ? '+' : ''}{new Date().getTimezoneOffset() / -60}:00
+                                </span>
+                            </CardContent>
+                        </Card>
                     </div>
-                )}
-
-                {/* NOTIFICATIONS SECTION */}
-                {activeSection === "notifications" && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                )
+            case "notifications":
+                return (
+                    <div className="space-y-6">
                         <div>
                             <h3 className="text-lg font-medium">Notifications</h3>
                             <p className="text-sm text-muted-foreground">Manage how you receive alerts.</p>
@@ -356,225 +150,210 @@ export function SettingsClient({ user, stats, memberSince }: SettingsClientProps
                             <CardContent className="p-6 space-y-6">
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <Label>Browser Notifications</Label>
-                                            {permission === 'granted' && (
-                                                <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                    Enabled
-                                                </span>
-                                            )}
-                                            {permission === 'denied' && (
-                                                <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
-                                                    Denied
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">
-                                            {permission === 'denied'
-                                                ? "Notifications are blocked. Please enable them in your browser settings."
-                                                : "Receive native browser notifications even when the app is in the background."}
-                                        </p>
+                                        <Label>Browser Notifications</Label>
+                                        <p className="text-sm text-muted-foreground">Receive push alerts.</p>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        {permission === 'granted' ? (
-                                            <>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => sendNotification("Test Notification", { body: "This is how your reminders will appear!" })}
-                                                >
-                                                    Test Notification
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={scheduleTestReminder}
-                                                >
-                                                    Test Reminder (1 min)
-                                                </Button>
-                                            </>
-                                        ) : permission === 'denied' ? (
-                                            <Button variant="outline" size="sm" disabled>
-                                                Blocked
-                                            </Button>
-                                        ) : (
-                                            <Button size="sm" onClick={() => requestPermission()}>
-                                                Enable
-                                            </Button>
-                                        )}
-                                    </div>
+                                    <Button
+                                        size="sm"
+                                        variant={permission === 'granted' ? "outline" : "default"}
+                                        onClick={requestPermission}
+                                        disabled={permission === 'granted'}
+                                    >
+                                        {permission === 'granted' ? 'Enabled' : 'Enable'}
+                                    </Button>
                                 </div>
-                                <Separator />
-                                <div className="flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <Label>Daily Reminders (9 AM)</Label>
-                                        <p className="text-sm text-muted-foreground">Receive a summary of your habits.</p>
-                                    </div>
-                                    <Switch checked={dailyReminder} onCheckedChange={toggleDailyReminder} />
-                                </div>
+                                {permission === 'granted' && (
+                                    <Button variant="ghost" size="sm" onClick={() => sendNotification("Test", { body: "Working!" })}>
+                                        Test Notification
+                                    </Button>
+                                )}
                             </CardContent>
                         </Card>
                     </div>
                 )
-                }
-
-                {/* HABITS SECTION */}
-                {
-                    activeSection === "habits" && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <div>
-                                <h3 className="text-lg font-medium">Habits & Tracking</h3>
-                                <p className="text-sm text-muted-foreground">Configure your tracking preferences.</p>
-                            </div>
-                            <Separator />
-                            <Card>
-                                <CardContent className="p-6 flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <Label>Habit Streak Alerts</Label>
-                                        <p className="text-sm text-muted-foreground">Get notified if you&apos;re about to break a streak.</p>
-                                    </div>
-                                    <Switch defaultChecked />
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardContent className="p-6 flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <Label>Confetti Effects</Label>
-                                        <p className="text-sm text-muted-foreground">Show confetti when completing habits.</p>
-                                    </div>
-                                    <Switch defaultChecked />
-                                </CardContent>
-                            </Card>
+            case "habits":
+                return (
+                    <div className="space-y-6">
+                        <div>
+                            <h3 className="text-lg font-medium">Habits & Tracking</h3>
+                            <p className="text-sm text-muted-foreground">Tracking preferences.</p>
                         </div>
-                    )
-                }
-
-                {/* RESOURCES SECTION */}
-                {
-                    activeSection === "resources" && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <div>
-                                <h3 className="text-lg font-medium">Curated Resources</h3>
-                                <p className="text-sm text-muted-foreground">Hand-picked videos to help you focus.</p>
-                            </div>
-                            <Separator />
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <a
-                                    href="https://www.youtube.com/watch?v=PZ7lDrwYdZc"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-primary/5 hover:border-primary/50 transition-all group"
-                                >
-                                    <div className="space-y-0.5">
-                                        <p className="text-sm font-medium">Atomic Habits Summary</p>
-                                        <p className="text-xs text-muted-foreground">Master your habits</p>
-                                    </div>
-                                    <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </a>
-                                <a
-                                    href="https://www.youtube.com/watch?v=nm1TxQj9IsQ"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-primary/5 hover:border-primary/50 transition-all group"
-                                >
-                                    <div className="space-y-0.5">
-                                        <p className="text-sm font-medium">Sleep Toolkit (Huberman)</p>
-                                        <p className="text-xs text-muted-foreground">Optimize your rest</p>
-                                    </div>
-                                    <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </a>
-                                <a
-                                    href="https://www.youtube.com/watch?v=w76ZabrHA-w"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-primary/5 hover:border-primary/50 transition-all group"
-                                >
-                                    <div className="space-y-0.5">
-                                        <p className="text-sm font-medium">Mental Wellness Guide</p>
-                                        <p className="text-xs text-muted-foreground">Mindfulness & Balance</p>
-                                    </div>
-                                    <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </a>
-                                <a
-                                    href="https://www.youtube.com/watch?v=n-2pD30UqE0"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 hover:bg-primary/5 hover:border-primary/50 transition-all group"
-                                >
-                                    <div className="space-y-0.5">
-                                        <p className="text-sm font-medium">Mastering Self-Help</p>
-                                        <p className="text-xs text-muted-foreground">Practical Psychology</p>
-                                    </div>
-                                    <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </a>
-                            </div>
+                        <Separator />
+                        <Card>
+                            <CardContent className="p-6 flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <Label>Streak Alerts</Label>
+                                    <p className="text-sm text-muted-foreground">Warn before streak loss</p>
+                                </div>
+                                <Switch defaultChecked />
+                            </CardContent>
+                        </Card>
+                    </div>
+                )
+            case "danger":
+                return (
+                    <div className="space-y-6">
+                        <div className="text-destructive">
+                            <h3 className="text-lg font-medium flex items-center gap-2">
+                                <AlertTriangle className="h-5 w-5" /> Danger Zone
+                            </h3>
                         </div>
-                    )
-                }
+                        <Separator className="bg-destructive/10" />
+                        <Card className="border-destructive/20 bg-destructive/5">
+                            <CardContent className="p-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                                <div className="space-y-1">
+                                    <p className="text-sm font-medium text-destructive">Delete Account</p>
+                                    <p className="text-sm text-muted-foreground">Permanently delete your account and all data.</p>
+                                </div>
+                                <Button variant="destructive" size="sm">Delete Account</Button>
+                            </CardContent>
+                        </Card>
+                    </div>
+                )
+            default:
+                return <div>Select a section</div>
+        }
+    }
 
-                {/* PRIVACY SECTION */}
-                {
-                    activeSection === "privacy" && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <div>
-                                <h3 className="text-lg font-medium">Data & Privacy</h3>
-                                <p className="text-sm text-muted-foreground">Manage your data ownership.</p>
-                            </div>
-                            <Separator />
-                            <Card>
-                                <CardContent className="p-6 space-y-6">
-                                    <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-medium">Export Data</p>
-                                            <p className="text-sm text-muted-foreground">Download a JSON copy of all your habits and logs.</p>
-                                        </div>
-                                        <Button variant="outline" size="sm" className="gap-2">
-                                            <Download className="h-4 w-4" />
-                                            Export JSON
-                                        </Button>
-                                    </div>
-                                    <Separator />
-                                    <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-medium">Session Management</p>
-                                            <p className="text-sm text-muted-foreground">Sign out of all active sessions.</p>
-                                        </div>
-                                        <Button variant="ghost" onClick={() => logout()} className="gap-2 text-muted-foreground">
-                                            <LogOut className="h-4 w-4" />
-                                            Log Out
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    )
-                }
+    const Separator = ({ className }: { className?: string }) => (
+        <div className={cn("h-px bg-border w-full", className)} />
+    )
 
-                {/* DANGER ZONE */}
-                {
-                    activeSection === "danger" && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <div className="text-destructive">
-                                <h3 className="text-lg font-medium flex items-center gap-2">
-                                    <AlertTriangle className="h-5 w-5" />
-                                    Danger Zone
-                                </h3>
-                                <p className="text-sm text-destructive/80">Irreversible actions.</p>
-                            </div>
-                            <Separator className="bg-destructive/10" />
-                            <Card className="border-destructive/20 bg-destructive/5">
-                                <CardContent className="p-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium text-destructive">Delete Account</p>
-                                        <p className="text-sm text-muted-foreground">Permanently delete your account and all data.</p>
+    // MAIN RENDER
+    return (
+        <div className="max-w-md mx-auto md:max-w-5xl md:mx-auto pb-10 px-4 md:px-0 min-h-[500px]">
+            {isMobile ? (
+                // MOBILE VIEW (Drill Down)
+                <div className="relative overflow-hidden w-full">
+                    <AnimatePresence mode="wait">
+                        {mobileView === "menu" ? (
+                            <motion.div
+                                key="menu"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.2 }}
+                                className="space-y-6"
+                            >
+                                {/* Mobile Menu List */}
+                                <div className="space-y-2">
+                                    <h3 className="text-lg font-medium px-1">Account</h3>
+                                    <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+                                        <Link href="/dashboard/profile" className="flex items-center justify-between p-4 hover:bg-muted/50 border-b last:border-0 border-border/50">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full"><User className="h-4 w-4 text-blue-600" /></div>
+                                                <span className="font-medium">Profile</span>
+                                            </div>
+                                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                        </Link>
+                                        <button onClick={() => handleSectionClick('account')} className="w-full flex items-center justify-between p-4 hover:bg-muted/50 border-b last:border-0 border-border/50">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-full"><Key className="h-4 w-4 text-gray-600" /></div>
+                                                <span className="font-medium">Security</span>
+                                            </div>
+                                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                        </button>
+                                        <Link href="/dashboard/billing" className="flex items-center justify-between p-4 hover:bg-muted/50 last:border-0">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full"><CreditCard className="h-4 w-4 text-green-600" /></div>
+                                                <span className="font-medium">Billing</span>
+                                            </div>
+                                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                        </Link>
                                     </div>
-                                    <Button variant="destructive" size="sm">Delete Account</Button>
-                                </CardContent>
-                            </Card>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <h3 className="text-lg font-medium px-1">App Settings</h3>
+                                    <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+                                        {sections.filter(s => ['preferences', 'notifications', 'habits'].includes(s.id)).map(section => (
+                                            <button key={section.id} onClick={() => handleSectionClick(section.id)} className="w-full flex items-center justify-between p-4 hover:bg-muted/50 border-b last:border-0 border-border/50">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="bg-secondary p-2 rounded-full"><section.icon className="h-4 w-4 text-foreground" /></div>
+                                                    <span className="font-medium">{section.label}</span>
+                                                </div>
+                                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <h3 className="text-lg font-medium px-1">Other</h3>
+                                    <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+                                        {sections.filter(s => ['resources', 'privacy', 'danger'].includes(s.id)).map(section => (
+                                            <button key={section.id} onClick={() => handleSectionClick(section.id)} className="w-full flex items-center justify-between p-4 hover:bg-muted/50 border-b last:border-0 border-border/50">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-2 rounded-full ${section.id === 'danger' ? 'bg-red-100 dark:bg-red-900/20' : 'bg-secondary'}`}>
+                                                        <section.icon className={`h-4 w-4 ${section.id === 'danger' ? 'text-red-600' : 'text-foreground'}`} />
+                                                    </div>
+                                                    <span className={`font-medium ${section.id === 'danger' ? 'text-red-600' : ''}`}>{section.label}</span>
+                                                </div>
+                                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <Button variant="ghost" className="w-full text-muted-foreground" onClick={() => logout()}>
+                                    Log Out
+                                </Button>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="detail"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                transition={{ duration: 0.2 }}
+                                className="space-y-4"
+                            >
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Button variant="ghost" size="sm" className="gap-1 pl-2" onClick={goBack}>
+                                        <ArrowLeft className="h-4 w-4" /> Back
+                                    </Button>
+                                    <h2 className="font-semibold text-lg">{sections.find(s => s.id === activeSection)?.label}</h2>
+                                </div>
+                                {renderContent(activeSection)}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            ) : (
+                // DESKTOP VIEW (Sidebar + Content)
+                <div className="flex flex-col lg:flex-row gap-8">
+                    <aside className="lg:w-64 shrink-0 space-y-1">
+                        <Link href="/dashboard/profile" className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                            <User className="h-4 w-4" /> Profile
+                        </Link>
+                        <Link href="/dashboard/billing" className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                            <CreditCard className="h-4 w-4" /> Billing
+                        </Link>
+                        <Separator className="my-2" />
+                        {sections.map((item) => (
+                            <button
+                                key={item.id}
+                                onClick={() => setActiveSection(item.id)}
+                                className={cn(
+                                    "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                                    activeSection === item.id
+                                        ? "bg-primary/10 text-primary"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                )}
+                            >
+                                <item.icon className="h-4 w-4" />
+                                {item.label}
+                            </button>
+                        ))}
+                    </aside>
+
+                    <main className="flex-1 min-w-0">
+                        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            {renderContent(activeSection)}
                         </div>
-                    )
-                }
-            </main >
-        </div >
+                    </main>
+                </div>
+            )}
+        </div>
     )
 }

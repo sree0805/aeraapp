@@ -39,14 +39,14 @@ export function OverviewCharts({ dailyData, weeklyData, hideDaily, hideWeekly }:
                     </CardHeader>
                     <CardContent>
                         <div className="h-auto md:h-[200px] w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
-                            <div className="h-[200px] w-full md:w-1/2">
+                            <div className="h-[200px] w-full md:w-1/2 flex items-center justify-center mx-auto max-w-[250px] md:max-w-none">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
                                             data={dailyChart}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={60}
+                                            innerRadius={50}
                                             outerRadius={75}
                                             startAngle={90}
                                             endAngle={-270}
@@ -84,14 +84,14 @@ export function OverviewCharts({ dailyData, weeklyData, hideDaily, hideWeekly }:
                     </CardHeader>
                     <CardContent>
                         <div className="h-auto md:h-[200px] w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
-                            <div className="h-[200px] w-full md:w-1/2">
+                            <div className="h-[200px] w-full md:w-1/2 flex items-center justify-center mx-auto max-w-[250px] md:max-w-none">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
                                             data={weeklyChart}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={60}
+                                            innerRadius={50}
                                             outerRadius={75}
                                             startAngle={90}
                                             endAngle={-270}

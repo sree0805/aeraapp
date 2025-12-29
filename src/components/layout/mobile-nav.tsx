@@ -17,8 +17,8 @@ export function MobileNav() {
     ]
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-t border-border/50 pb-safe md:hidden">
-            <div className="flex items-center justify-around h-16 px-2">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-lg border-t border-border/50 pb-safe md:hidden shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)]">
+            <div className="flex items-center justify-around h-16 px-4 pb-2 pt-1">
                 {routes.map((route) => {
                     const isActive = route.href === "/dashboard"
                         ? pathname === "/dashboard"

@@ -1,0 +1,84 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "Next.js 16",
+        "React 19",
+        "Supabase",
+        "TailwindCSS",
+        "Node.js",
+        "Google Generative AI"
+    ],
+    "features": [
+        {
+            "name": "Authentication",
+            "description": "User login and signup using Supabase Auth.",
+            "files": [
+                "src/app/(auth)",
+                "src/app/auth"
+            ]
+        },
+        {
+            "name": "Dashboard Overview",
+            "description": "Main dashboard view with summary of habits and activities.",
+            "files": [
+                "src/app/dashboard/page.tsx",
+                "src/app/dashboard/layout.tsx"
+            ]
+        },
+        {
+            "name": "Habit Tracking",
+            "description": "Manage and track daily habits.",
+            "files": [
+                "src/app/dashboard/habits"
+            ]
+        },
+        {
+            "name": "Mood/Emotions",
+            "description": "Track daily emotions and mood.",
+            "files": [
+                "src/app/dashboard/emotions"
+            ]
+        },
+        {
+            "name": "Calendar",
+            "description": "Calendar view of activities.",
+            "files": [
+                "src/app/dashboard/calendar"
+            ]
+        },
+        {
+            "name": "Tasks",
+            "description": "Task management system.",
+            "files": [
+                "src/app/dashboard/tasks"
+            ]
+        },
+        {
+            "name": "AI Therapist",
+            "description": "Chat interface with AI therapist.",
+            "files": [
+                "src/app/dashboard/therapist",
+                "src/app/api/chat"
+            ]
+        },
+        {
+            "name": "Analytics",
+            "description": "Data visualization of user progress.",
+            "files": [
+                "src/app/dashboard/analytics",
+                "src/app/api/insights"
+            ]
+        },
+        {
+            "name": "Billing & Settings",
+            "description": "User profile settings and billing management.",
+            "files": [
+                "src/app/dashboard/settings",
+                "src/app/dashboard/billing",
+                "src/app/dashboard/profile",
+                "src/app/api/billing",
+                "src/app/api/stripe"
+            ]
+        }
+    ]
+}

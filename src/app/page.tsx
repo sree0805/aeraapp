@@ -88,9 +88,9 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full px-4">
-              <Link href="/dashboard" className="w-full sm:w-auto">
+              <Link href="/signup" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto h-12 px-8 rounded-full text-base bg-primary hover:bg-primary/90 shadow-[0_0_40px_-10px_rgba(129,74,200,0.5)] transition-all hover:scale-105">
-                  Go to Dashboard
+                  Get Started
                 </Button>
               </Link>
               <Link href="#features" className="w-full sm:w-auto">
@@ -239,7 +239,7 @@ export default function Home() {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
               Start tracking, analyzing, and improving your life today.
             </p>
-            <Link href="/dashboard">
+            <Link href="/signup">
               <Button size="lg" className="h-14 px-10 text-lg rounded-full shadow-lg shadow-primary/25 bg-primary hover:bg-primary/90 text-white">
                 Start Your Journey
               </Button>

@@ -24,6 +24,7 @@ export default async function AnalyticsPage() {
                 moodData={data.moodData}
                 habitMetrics={data.habitMetrics}
                 weeklyChartData={data.weeklyChartData}
+                subscriptionPlan={data.plan}
             />
         </div>
     );
