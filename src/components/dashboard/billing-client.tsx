@@ -23,14 +23,13 @@ import {
 import { Check, Loader2, Zap, CreditCard, Clock, Receipt } from "lucide-react"
 
 interface BillingClientProps {
-    subscription: any
-    topupCredits: number
+    usage: any
 }
 
 // Mock History Data - Typically fetched from Stripe via backend
 const paymentHistory: any[] = []
 
-export function BillingClient({ subscription, topupCredits }: BillingClientProps) {
+export function BillingClient({ usage }: BillingClientProps) {
     const [isLoading, setIsLoading] = useState(false)
 
     const handleUpgrade = async (priceId: string) => {
@@ -42,8 +41,8 @@ export function BillingClient({ subscription, topupCredits }: BillingClientProps
         }, 1000)
     }
 
-    const currentPlanName = subscription?.prices?.products?.name || "Free Plan"
-    const isPro = currentPlanName !== "Free Plan"
+    const isPro = usage?.plan === 'pro'
+    const currentPlanName = isPro ? "Pro Plan" : "Free Plan"
 
     // Feature Logic: 8 credits for Free, 35 for Pro
     const dailyCredits = isPro ? 35 : 8
@@ -113,7 +112,7 @@ export function BillingClient({ subscription, topupCredits }: BillingClientProps
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium text-muted-foreground">Top-up Credits</CardTitle>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-3xl font-bold">{topupCredits}</span>
+                            <span className="text-3xl font-bold">{usage?.purchased_credits || 0}</span>
                             <span className="text-sm text-muted-foreground">available</span>
                         </div>
                     </CardHeader>
